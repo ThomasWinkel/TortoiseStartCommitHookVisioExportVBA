@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using Visio = Microsoft.Office.Interop.Visio;
+using LibSubWCRev;
 
 namespace TortoiseStartCommitHookVisioExportVBA
 {
@@ -17,15 +18,21 @@ namespace TortoiseStartCommitHookVisioExportVBA
             
             Visio.InvisibleApp app = new Visio.InvisibleApp();
 
+            SubWCRev svn = new SubWCRev();
+
             foreach (string path_ in affectedPaths)
             {
                 string path = Path.GetFullPath(path_);
 
                 if (fileExtensionPattern.IsMatch(path) && File.Exists(path))
                 {
-                    Visio.Document doc = app.Documents.Open(path);
-                    ExportVBA(doc, Path.Combine(args[0], doc.Name));
-                    doc.Close();
+                    svn.GetWCInfo(path, true, false);
+                    if (svn.HasModifications == true)
+                    {
+                        Visio.Document doc = app.Documents.Open(path);
+                        ExportVBA(doc, Path.Combine(args[0], doc.Name));
+                        doc.Close();
+                    }
                 }
             }
             app.Quit();
