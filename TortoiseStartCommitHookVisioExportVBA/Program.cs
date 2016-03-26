@@ -11,7 +11,6 @@ namespace TortoiseStartCommitHookVisioExportVBA
 
         static void Main(string[] args)
         {
-            // string[] affectedPaths = File.ReadAllLines(args[1]);
             string[] affectedPaths = Directory.GetFiles(args[3], "*.*", SearchOption.AllDirectories);
 
             Regex fileExtensionPattern = new Regex(@"^.*\.(vss|vsd|vst)$", RegexOptions.IgnoreCase);
@@ -83,6 +82,14 @@ namespace TortoiseStartCommitHookVisioExportVBA
                     continue;
 
                 component.Export(Path.Combine(path, component.Name + fileExtension));
+            }
+
+            try
+            {
+                Directory.Delete(path, false);
+            }
+            catch
+            {
             }
         }
 
